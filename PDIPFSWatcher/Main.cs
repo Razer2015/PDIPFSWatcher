@@ -9,12 +9,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using GT.Shared;
+using PDIPFSWatcher.Models;
+using PDIPFSWatcher.Tracing;
+using PDIPFSWatcher.Tracing.Filters;
 
 namespace PDIPFSWatcher
 {
     public partial class Main : Form
     {
         private VolumeInfo _volInfo;
+        private ComboboxItem[] _processes;
+        private int _selectedPid = -1;
 
         public Main()
         {
@@ -22,6 +27,7 @@ namespace PDIPFSWatcher
 
             button_startWatching.Enabled = false;
             button_stopWatching.Enabled = false;
+            button_refreshProcesses.Enabled = false;
 
             var assembly = System.Reflection.Assembly.GetExecutingAssembly();
             var fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
@@ -41,6 +47,9 @@ namespace PDIPFSWatcher
                 _volInfo.NewFileAccess += _volInfo_NewFileAccess;
 
                 button_startWatching.Enabled = true;
+                button_refreshProcesses.Enabled = true;
+
+                PopulateProcessPicker();
 
                 toolStripStatusLabel.Text = $"Path loaded";
             }
@@ -52,21 +61,26 @@ namespace PDIPFSWatcher
 
         private void _volInfo_NewFileAccess(object sender, EventArgs e)
         {
-            var fileInfo = (PDIPFSFileAccessEventArgs)e;
-            PrintFileAccess(fileInfo.PDIPFS, fileInfo.HRPath, fileInfo.Offset, fileInfo.Size, fileInfo.IrpPtr);
+            var eventInfo = (PDIPFSFileAccessEventArgs)e;
+            PrintFileAccess(eventInfo);
         }
 
-        private void PrintFileAccess(string pdipfsPath, string hrPath, long offset, int size, ulong irpPtr)
+        private void PrintFileAccess(PDIPFSFileAccessEventArgs eventInfo)
         {
             if (InvokeRequired)
             {
-                this.Invoke(new Action<string, string, long, int, ulong>(PrintFileAccess), pdipfsPath, hrPath, offset,
-                    size, irpPtr);
+                this.Invoke(new Action<PDIPFSFileAccessEventArgs>(PrintFileAccess), eventInfo);
                 return;
             }
 
             richTextBox.AppendWithTime(
-                $"{pdipfsPath,-15} | Offset: {offset:X16} | Size: {size:X8} | IrpPtr: {irpPtr:X16} | {hrPath,5}\r\n",
+                $"{eventInfo.PDIPFS,-10} | " +
+                $"Offset: {eventInfo.Offset:X16} | " +
+                $"Size: {eventInfo.Size:X8} | " +
+                $"IrpPtr: {eventInfo.IrpPtr:X16} | " +
+                $"ProcessID: {eventInfo.ProcessID:X8} | " +
+                $"ProcessName: {(eventInfo.ProcessName.Length > 10 ? $"{eventInfo.ProcessName.Left(7)}..." : eventInfo.ProcessName),-10} | " +
+                $"{eventInfo.HRPath,5}\r\n",
                 logType: LogType.NORMAL);
         }
 
@@ -107,7 +121,39 @@ namespace PDIPFSWatcher
             richTextBox.SelectionStart = richTextBox.Text.Length;
             // scroll it automatically
             richTextBox.ScrollToCaret();
-        } 
+        }
+
+        private void comboBox_processPicker_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                if (!(comboBox_processPicker.SelectedItem is ComboboxItem selectedItem) || selectedItem.Value == -1 ||
+                    selectedItem.Value == -2)
+                {
+                    _selectedPid = -2;
+                    _volInfo.TraceManager.Filter = null;
+                }
+                else
+                {
+                    _selectedPid = selectedItem.Value;
+
+                    _volInfo.TraceManager.Filter = new TraceEventFilter
+                    {
+                        FilterRules = { new ProcessIdFilter(true, selectedItem.Value) }
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                // Hmm do nothing, at least for now.
+            }
+        }
+
+        private void button_refreshProcesses_Click(object sender, EventArgs e)
+        {
+            if (_volInfo != null)
+                PopulateProcessPicker();
+        }
         #endregion
 
         private void ChangeWatching(bool watch)
@@ -123,6 +169,62 @@ namespace PDIPFSWatcher
                 _volInfo.StopWatching();
                 button_startWatching.Enabled = true;
                 button_stopWatching.Enabled = false;
+            }
+        }
+
+        private void PopulateProcessPicker()
+        {
+            comboBox_processPicker.Items.Clear();
+
+            Process[] processCollection = Process.GetProcesses()
+                .OrderBy(x => x.ProcessName)
+                .ToArray();
+            _processes = new ComboboxItem[processCollection.Length + 1];
+            _processes[0] = new ComboboxItem
+            {
+                Text = "All",
+                Value = -2
+            };
+
+            for (int i = 0; i < processCollection.Length; i++)
+            {
+                var process = processCollection[i];
+                _processes[i + 1] = new ComboboxItem
+                {
+                    Text = process.ProcessName,
+                    Value = process.Id
+                };
+            }
+
+            comboBox_processPicker.Items.AddRange(_processes);
+
+            switch (_selectedPid)
+            {
+                case -1:
+                    var rpcs3 = _processes.FirstOrDefault(x => x.Text.Contains("rpcs3"));
+                    if (rpcs3 != null)
+                    {
+                        comboBox_processPicker.SelectedIndex = comboBox_processPicker.Items.IndexOf(rpcs3);
+                    }
+                    else
+                    {
+                        goto case -2;
+                    }
+                    break;
+                case -2:
+                    comboBox_processPicker.SelectedIndex = 0;
+                    break;
+                default:
+                    var selectedProcess = _processes.FirstOrDefault(x => x.Value == _selectedPid);
+                    if (selectedProcess != null)
+                    {
+                        comboBox_processPicker.SelectedIndex = comboBox_processPicker.Items.IndexOf(selectedProcess);
+                    }
+                    else
+                    {
+                        goto case -2;
+                    }
+                    break;
             }
         }
     }

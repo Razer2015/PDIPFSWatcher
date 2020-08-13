@@ -86,6 +86,8 @@ namespace PDIPFSWatcher
                 NewFileAccess?.Invoke(null,
                     new PDIPFSFileAccessEventArgs
                     {
+                        ProcessID = fileInfo.ProcessID,
+                        ProcessName = fileInfo.ProcessName,
                         PDIPFS = file.pdPath,
                         HRPath = file.path,
                         NodeIndex = file.entryIndex,

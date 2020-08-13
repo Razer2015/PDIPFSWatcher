@@ -49,7 +49,7 @@ namespace PDIPFSWatcher.Tracing
                     TraceEventSessionOptions.NoRestartOnCreate)
                 {
                     BufferSizeMB = 128,
-                    //CpuSampleIntervalMSec = 10,
+                    CpuSampleIntervalMSec = 10,
                 };
             var keywords = KernelTraceEventParser.Keywords.All;
 

@@ -37,6 +37,8 @@
             this.button_clear = new System.Windows.Forms.Button();
             this.button_stopWatching = new System.Windows.Forms.Button();
             this.button_startWatching = new System.Windows.Forms.Button();
+            this.comboBox_processPicker = new System.Windows.Forms.ComboBox();
+            this.button_refreshProcesses = new System.Windows.Forms.Button();
             this.richTextBox = new PDIPFSWatcher.RichTextBoxEx();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -51,7 +53,7 @@
             this.fileToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(800, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(804, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -82,9 +84,9 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 428);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 429);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(800, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(804, 22);
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -101,7 +103,7 @@
             this.tabControl.Location = new System.Drawing.Point(0, 24);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(800, 404);
+            this.tabControl.Size = new System.Drawing.Size(804, 405);
             this.tabControl.TabIndex = 2;
             // 
             // tabPage
@@ -111,13 +113,15 @@
             this.tabPage.Location = new System.Drawing.Point(4, 22);
             this.tabPage.Name = "tabPage";
             this.tabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage.Size = new System.Drawing.Size(792, 378);
+            this.tabPage.Size = new System.Drawing.Size(796, 379);
             this.tabPage.TabIndex = 0;
             this.tabPage.Text = "Main";
             this.tabPage.UseVisualStyleBackColor = true;
             // 
             // groupBox_actions
             // 
+            this.groupBox_actions.Controls.Add(this.button_refreshProcesses);
+            this.groupBox_actions.Controls.Add(this.comboBox_processPicker);
             this.groupBox_actions.Controls.Add(this.checkBox_autoScroll);
             this.groupBox_actions.Controls.Add(this.button_clear);
             this.groupBox_actions.Controls.Add(this.button_stopWatching);
@@ -125,7 +129,7 @@
             this.groupBox_actions.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox_actions.Location = new System.Drawing.Point(3, 3);
             this.groupBox_actions.Name = "groupBox_actions";
-            this.groupBox_actions.Size = new System.Drawing.Size(786, 43);
+            this.groupBox_actions.Size = new System.Drawing.Size(790, 43);
             this.groupBox_actions.TabIndex = 0;
             this.groupBox_actions.TabStop = false;
             this.groupBox_actions.Text = "Actions";
@@ -136,7 +140,7 @@
             this.checkBox_autoScroll.Checked = true;
             this.checkBox_autoScroll.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox_autoScroll.Dock = System.Windows.Forms.DockStyle.Right;
-            this.checkBox_autoScroll.Location = new System.Drawing.Point(611, 16);
+            this.checkBox_autoScroll.Location = new System.Drawing.Point(615, 16);
             this.checkBox_autoScroll.Name = "checkBox_autoScroll";
             this.checkBox_autoScroll.Size = new System.Drawing.Size(75, 24);
             this.checkBox_autoScroll.TabIndex = 3;
@@ -146,7 +150,8 @@
             // button_clear
             // 
             this.button_clear.Dock = System.Windows.Forms.DockStyle.Right;
-            this.button_clear.Location = new System.Drawing.Point(686, 16);
+            this.button_clear.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button_clear.Location = new System.Drawing.Point(690, 16);
             this.button_clear.Name = "button_clear";
             this.button_clear.Size = new System.Drawing.Size(97, 24);
             this.button_clear.TabIndex = 2;
@@ -156,6 +161,7 @@
             // 
             // button_stopWatching
             // 
+            this.button_stopWatching.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button_stopWatching.Location = new System.Drawing.Point(109, 19);
             this.button_stopWatching.Name = "button_stopWatching";
             this.button_stopWatching.Size = new System.Drawing.Size(97, 23);
@@ -166,6 +172,7 @@
             // 
             // button_startWatching
             // 
+            this.button_startWatching.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button_startWatching.Location = new System.Drawing.Point(6, 19);
             this.button_startWatching.Name = "button_startWatching";
             this.button_startWatching.Size = new System.Drawing.Size(97, 23);
@@ -174,13 +181,34 @@
             this.button_startWatching.UseVisualStyleBackColor = true;
             this.button_startWatching.Click += new System.EventHandler(this.button_startWatching_Click);
             // 
+            // comboBox_processPicker
+            // 
+            this.comboBox_processPicker.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.comboBox_processPicker.FormattingEnabled = true;
+            this.comboBox_processPicker.Location = new System.Drawing.Point(212, 20);
+            this.comboBox_processPicker.Name = "comboBox_processPicker";
+            this.comboBox_processPicker.Size = new System.Drawing.Size(240, 22);
+            this.comboBox_processPicker.TabIndex = 4;
+            this.comboBox_processPicker.SelectedIndexChanged += new System.EventHandler(this.comboBox_processPicker_SelectedIndexChanged);
+            // 
+            // button_refreshProcesses
+            // 
+            this.button_refreshProcesses.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button_refreshProcesses.Location = new System.Drawing.Point(458, 19);
+            this.button_refreshProcesses.Name = "button_refreshProcesses";
+            this.button_refreshProcesses.Size = new System.Drawing.Size(128, 23);
+            this.button_refreshProcesses.TabIndex = 5;
+            this.button_refreshProcesses.Text = "Refresh processes";
+            this.button_refreshProcesses.UseVisualStyleBackColor = true;
+            this.button_refreshProcesses.Click += new System.EventHandler(this.button_refreshProcesses_Click);
+            // 
             // richTextBox
             // 
             this.richTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.richTextBox.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.richTextBox.Location = new System.Drawing.Point(3, 46);
             this.richTextBox.Name = "richTextBox";
-            this.richTextBox.Size = new System.Drawing.Size(786, 329);
+            this.richTextBox.Size = new System.Drawing.Size(790, 330);
             this.richTextBox.TabIndex = 1;
             this.richTextBox.Text = "";
             this.richTextBox.TextChanged += new System.EventHandler(this.richTextBox_TextChanged);
@@ -189,11 +217,12 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(804, 451);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
+            this.MinimumSize = new System.Drawing.Size(820, 490);
             this.Name = "Main";
             this.Text = "PDIPFS File Watcher by xfileFIN";
             this.menuStrip1.ResumeLayout(false);
@@ -226,6 +255,8 @@
         private RichTextBoxEx richTextBox;
         private System.Windows.Forms.Button button_clear;
         private System.Windows.Forms.CheckBox checkBox_autoScroll;
+        private System.Windows.Forms.ComboBox comboBox_processPicker;
+        private System.Windows.Forms.Button button_refreshProcesses;
     }
 }
 

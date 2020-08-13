@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Diagnostics.Tracing;
 using PDIPFSWatcher.Tracing;
 
-namespace ProcMonX.Tracing.Filters
+namespace PDIPFSWatcher.Tracing.Filters
 {
     [DebuggerDisplay("Active: {IsActive} Include: {Include} Names: {Pids}")]
     [Filter("Process IDs")]
